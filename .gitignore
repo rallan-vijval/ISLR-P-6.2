@@ -1,0 +1,10 @@
+# Rendered output (regenerate with `quarto render slides.qmd`)
+slides.html
+slides_files/
+.quarto/
+*_files/
+
+# Textbook PDF (reference only; do not commit to a public repo)
+*.pdf
+
+.DS_Store
