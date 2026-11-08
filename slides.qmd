@@ -26,6 +26,222 @@ format:
 <!-- ===================== Speaker 2: add slides here ===================== -->
 
 
+<!-- ===================== Added slides: Lasso and Ridge foundations ===================== -->
+
+## Why introduce the lasso? {.smaller}
+
+::: {.fragment}
+Ridge regression shrinks coefficient estimates toward zero, but generally does not set them exactly to zero.
+:::
+
+::: {.fragment}
+- Ridge therefore typically retains all $p$ predictors, even when only a subset may be important.
+- This can make interpretation difficult when $p$ is large.
+- The lasso uses an absolute-value penalty and can set some coefficient estimates exactly to zero.
+:::
+
+::: {.fragment .result}
+**Main distinction:** ridge shrinks coefficients; lasso shrinks coefficients and can select variables.
+:::
+
+::: notes
+Ridge makes coefficients smaller but normally leaves every predictor in the model. The lasso can make coefficients exactly zero, producing a simpler model.
+:::
+
+## The lasso objective {.smaller}
+
+The lasso coefficient estimates minimize
+
+$$
+\hat{\boldsymbol\beta}^{L}_{\lambda}
+=\arg\min_{\boldsymbol\beta}\left\{RSS+\lambda\sum_{j=1}^{p}|\beta_j|\right\}.
+$$
+
+::: {.columns}
+::: {.column width="34%"}
+**RSS**
+
+$$RSS=\sum_{i=1}^{n}\left(y_i-\beta_0-\sum_{j=1}^{p}\beta_jx_{ij}\right)^2$$
+
+Measures squared prediction errors on the training data.
+:::
+::: {.column width="33%"}
+**L1 penalty**
+
+$$\lambda\sum_{j=1}^{p}|\beta_j|$$
+
+Penalizes the total absolute size of the slope coefficients.
+:::
+::: {.column width="33%"}
+**Tuning parameter $\lambda$**
+
+- Larger $\lambda$: stronger penalty and more shrinkage.
+- Smaller $\lambda$: weaker penalty.
+:::
+:::
+
+::: {.fragment .result}
+The intercept $\beta_0$ is not included in the penalty.
+:::
+
+::: notes
+The lasso balances training RSS against a penalty on the absolute values of the slope coefficients. Lambda controls the strength of the penalty.
+:::
+
+## Figure 6.6 — Lasso coefficient paths {.smaller}
+
+::: {.center}
+![](figures/lasso-figure-6-6.png){width="88%"}
+:::
+
+[The standardized lasso coefficients for the Credit data set are shown against $\lambda$ and the ratio of the lasso coefficient norm to the least-squares coefficient norm.]{.caption .center}
+
+::: {.fragment .result}
+At $\lambda=0$, the lasso gives the least-squares fit. When $\lambda$ is sufficiently large, all coefficient estimates become zero (the null model).
+:::
+
+::: notes
+The left panel shows coefficient paths as lambda increases. In the right panel, the predictors enter as the model moves from strong shrinkage toward the least-squares fit. For this Credit example, rating enters first; student and limit enter nearly together, followed by income. This order is specific to this data set.
+:::
+
+## Reading the coefficient paths {.smaller}
+
+- As $\lambda$ increases, coefficient magnitudes shrink; at a sufficiently large value, all coefficients are zero.
+- The order in which predictors enter is data-dependent.
+- In the Credit example, rating enters first; student and limit enter almost simultaneously; income follows.
+- Different values of $\lambda$ can therefore produce models with different numbers of predictors.
+
+::: {.fragment .result}
+Unlike lasso, ridge regression generally keeps all predictors in the model, although their coefficient magnitudes shrink.
+:::
+
+::: notes
+The entry order shown in the figure is not a universal rule. It depends on the data set and should not be generalized to every lasso fit.
+:::
+
+## Equivalent constrained formulations {.smaller}
+
+The lasso can also be written as
+
+$$
+\min_{\boldsymbol\beta} RSS
+\quad\text{subject to}\quad
+\sum_{j=1}^{p}|\beta_j|\le s.
+$$
+
+Ridge regression can be written as
+
+$$
+\min_{\boldsymbol\beta} RSS
+\quad\text{subject to}\quad
+\sum_{j=1}^{p}\beta_j^2\le s.
+$$
+
+::: {.columns}
+::: {.column width="50%"}
+**Lasso: coefficient-size budget**
+
+The sum of absolute coefficient values must not exceed $s$.
+:::
+::: {.column width="50%"}
+**Ridge: squared-coefficient budget**
+
+The sum of squared coefficient values must not exceed $s$.
+:::
+:::
+
+::: {.fragment .result}
+A smaller $s$ imposes a tighter restriction. For each value of $\lambda$, a corresponding $s$ can give the same estimates under the equivalent constrained formulation.
+:::
+
+::: notes
+This s is a coefficient-magnitude budget. It is different from the s used in best subset selection, where s limits the number of nonzero coefficients.
+:::
+
+## Connection to best subset selection {.smaller}
+
+$$
+\min_{\boldsymbol\beta} RSS
+\quad\text{subject to}\quad
+\sum_{j=1}^{p} I(\beta_j\ne 0)\le s.
+$$
+
+- $I(\beta_j\ne0)=1$ if $\beta_j$ is nonzero; it is $0$ if $\beta_j=0$.
+- The sum counts the number of nonzero coefficients, so $s$ limits how many predictors may be included.
+- This is best subset selection: find the lowest-RSS model with at most $s$ predictors.
+- Exhaustively checking all possible subsets becomes computationally infeasible when $p$ is large.
+
+::: {.fragment .result}
+The $s$ in this formula counts predictors. It is not the same as the lasso's $s$, which limits the sum of absolute coefficient values.
+:::
+
+::: notes
+The indicator is a counting device: it returns one for a nonzero coefficient and zero for a zero coefficient. Best subset selection searches combinations of predictors under the count constraint.
+:::
+
+## Figure 6.7 — Constraint regions and RSS contours {.smaller}
+
+::: {.center}
+![](figures/lasso-figure-6-7.png){width="80%"}
+:::
+
+[The blue regions are the constraints; the red ellipses are contours of RSS. The solution is the first point at which an RSS contour touches the constraint region.]{.caption .center}
+
+::: {.fragment .result}
+The lasso's diamond has sharp corners on the axes; the ridge circle has a smooth boundary.
+:::
+
+::: notes
+As the RSS ellipses expand away from the least-squares estimates, RSS increases. The constrained solution is the first point of contact between an ellipse and the allowed region.
+:::
+
+## Why the geometry matters {.smaller}
+
+::: {.columns}
+::: {.column width="50%"}
+**Lasso: diamond**
+
+$$|\beta_1|+|\beta_2|\le s$$
+
+- The corners lie on the axes.
+- The RSS contour can touch a corner.
+- A coefficient can then be exactly zero, excluding its predictor.
+:::
+::: {.column width="50%"}
+**Ridge: circle**
+
+$$\beta_1^2+\beta_2^2\le s$$
+
+- The boundary is smooth.
+- The RSS contour generally touches away from the axes.
+- Coefficients are generally nonzero, though they may be small.
+:::
+:::
+
+::: {.fragment .result}
+Lasso can perform feature selection because it can set coefficients exactly to zero; ridge generally shrinks without eliminating predictors.
+:::
+
+::: notes
+The lasso does not always set coefficients to zero; the geometry makes this possible. The result also depends on the data and penalty strength.
+:::
+
+## Extending the geometry to more predictors {.smaller}
+
+- $p=2$: the lasso constraint is a diamond; the ridge constraint is a circle.
+- $p=3$: the lasso constraint becomes a polyhedron; the ridge constraint becomes a sphere.
+- $p>3$: the lasso constraint becomes a polytope; the ridge constraint becomes a hypersphere.
+
+::: {.fragment .result}
+The key idea remains the same: the sharp corners of the lasso constraint make exact-zero coefficients possible, including multiple zeros at once in higher dimensions.
+:::
+
+::: notes
+In higher dimensions, a lasso solution can lie on a face, edge, or corner where one or more coefficients equal zero. Ridge's smooth constraint boundary generally yields nonzero coefficient estimates.
+:::
+
+<!-- ===================== End added Lasso and Ridge foundations ===================== -->
+
 <!-- ===== Speaker 3: Furkan Danisman, "Comparing ridge and lasso" (pp. 247-252) ===== -->
 
 ## Ridge or lasso: which predicts better? {.smaller}
