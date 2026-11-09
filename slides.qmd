@@ -474,4 +474,46 @@ Many coefficients of similar size<br>
 - So ridge and the lasso are not ad hoc: they follow from the linear model plus a simple prior on beta.
 :::
 
-<!-- ===================== Speaker 4: add slides here ===================== -->
+<!-- ===== Speaker 4: Sean Murphy, "Selecting the tuning parameter" (pp. 252-253) ===== -->
+
+## Selecting the tuning parameter: ridge example {.smaller}
+
+Ridge and lasso both depend on $\lambda$, so we need a way to choose it from the data.
+
+::: {.columns}
+::: {.column width="36%" .fragment}
+**Cross-validation**
+
+1. Choose a range of $\lambda$ values
+2. Compute the CV error for each $\lambda$
+3. Select the $\lambda$ with the smallest CV error
+4. Re-fit on **all** observations using $\lambda$
+:::
+::: {.column width="64%" .fragment .center}
+![](figures/fig6-12-ridge-cv.png){width="100%"}
+
+[**Left Figure:** leave-one-out CV error for ridge on the Credit data. Dashed lines: selected $\lambda$.<br>**Right Figure:** all ten coefficients, with [**Limit**]{style="color: #FF0000;"}, [**Rating**]{style="color: #0000FF;"}, [**Student**]{style="color: #FFA500;"} in color. Source: ISLP, Fig. 6.12.]{.caption}
+:::
+:::
+
+::: {.fragment .result}
+**Result:** the selected $\lambda$ is small and the dip is shallow, so many values give a similar error. Here we might simply use least squares.
+:::
+
+## Selecting the tuning parameter: lasso example {.smaller}
+
+::: {.center}
+![](figures/fig6-13-lasso-cv.png){width="60%"}
+
+[**Left Figure:** ten-fold CV error for lasso on the sparse simulated data from Fig. 6.9. Dashed lines: smallest CV error.<br>**Right Figure:** lasso coefficients. Colored: signal variables; gray: noise variables. Source: ISLP, Fig. 6.13.]{.caption}
+:::
+
+**x-axis:** size of the lasso coefficients as a fraction of least squares.
+
+::: {.fragment .result}
+**Result:** the selected $\lambda$ beats both extremes: CV error <50, vs. ~200 for the avg response ($\lambda = \infty$) and ~1,450 for least squares ($\lambda = 0$). Only two signal variables kept, out of $p = 45$ with $n = 50$.
+:::
+
+::: {.fragment}
+**Up next, the workshop:** try everything from today on real data: ridge, lasso, and choosing $\lambda$.
+:::
