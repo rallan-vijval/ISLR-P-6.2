@@ -1,5 +1,9 @@
 ---
-pagetitle: "ISLR/P 6.2: Shrinkage Methods"
+title: "Shrinkage Methods"
+subtitle: "ISLR / ISLP, Chapter 6.2"
+author: "Allwin Steve Paul Justin Anantharaj . Furkan Danisman . Sean Murphy . Vijval Rallan"
+date: today
+date-format: long
 format:
   revealjs:
     slide-number: c/t
@@ -13,14 +17,226 @@ format:
     html-math-method: katex
 ---
 
+## Section 6.2
+
 <!--
   Group deck: ISLR/P Chapter 6.2 "Shrinkage Methods".
   Each speaker adds their slides in their own section below, in speaking order.
   Shared styling is in styles.css; put figures in figures/.
   Preview with: quarto preview slides.qmd
+  Note: keep these comments below the first ## heading. Anything above it becomes an empty slide.
 -->
 
-<!-- ===================== Speaker 1: add slides here ===================== -->
+<!-- ===== Speaker 1: Vijval Rallan, "Ridge regression" (6.2.1, pp. 240-244) ===== -->
+
+1. Ridge Regression
+2. The Lasso
+3. Comparing the Lasso and Ridge Regression
+4. Selecting the Tuning Parameter
+
+::: notes
+- Today's topic is Chapter 6.2, shrinkage methods. We've split it into the four parts on the slide, using the book's section names.
+- Link back: in Chapter 3 we fit linear regression with least squares, and in Chapter 2 we saw the bias-variance trade-off. Shrinkage methods still fit a linear model with all p predictors, but they shrink the coefficients toward zero, which can reduce variance a lot.
+- Order: I start with ridge regression, then the lasso, then comparing the two, then selecting the tuning parameter lambda with cross-validation. After that comes the hands-on workshop.
+- Optional question for the class: "Why would making coefficients smaller on purpose ever improve a model?" Take one or two answers, then move on. The next slides answer it.
+:::
+
+## The problem: least squares can be unstable {.smaller}
+
+::: {.columns}
+::: {.column width="40%"}
+- Least squares is **unbiased** when the true relationship is linear
+- But when $p$ is close to $n$, it has **high variance**: a small change in the training data can change the coefficients a lot
+- If $p > n$, least squares has **no unique solution** at all
+:::
+::: {.column width="60%" .center .fragment}
+![](figures/ridge-wobble.png){width="76%"}
+
+[Our own simulation, not from the book: $n = 50$, $p = 45$ (as in Fig. 6.5), 500 training sets.]{.caption}
+:::
+:::
+
+::: {.fragment .result}
+Least squares: right *on average*, but all over the place. Ridge: a little off-centre, far more stable.
+:::
+
+::: notes
+- Ask first: "If you collected a new sample and refit, would you expect the same coefficients?"
+- The grey histogram is least squares: centred near the true value 2, but estimates range from about -8 to 12. That's variance.
+- The red histogram is ridge: slightly pulled toward zero (a little bias, mean about 1.5) but much tighter (standard deviation about 0.8 vs 2.8).
+- This is the trade ridge makes: accept a bit of bias for a big drop in variance.
+- This figure is our own simulation in the same setting as the book (n = 50, p = 45); the lambda value isn't comparable to the book's.
+:::
+
+## The ridge regression objective {.smaller}
+
+The ridge coefficient estimates minimize
+
+$$
+\hat{\boldsymbol\beta}^{R}_{\lambda}
+=\arg\min_{\boldsymbol\beta}\left\{RSS+\lambda\sum_{j=1}^{p}\beta_j^2\right\} \qquad (6.5)
+$$
+
+::: {.columns}
+::: {.column width="40%" .fragment}
+**RSS**
+
+$$RSS=\sum_{i=1}^{n}\Big(y_i-\beta_0-\sum_{j=1}^{p}\beta_jx_{ij}\Big)^2$$
+
+Fit the data well, as in least squares.
+:::
+::: {.column width="30%" .fragment}
+**Shrinkage penalty ($\ell_2$)**
+
+$\lambda\sum_{j}\beta_j^2$ is small when the coefficients are close to zero, so it pulls them toward 0.
+:::
+::: {.column width="30%" .fragment}
+**Tuning parameter $\lambda \ge 0$**
+
+- $\lambda = 0$: least squares
+- $\lambda \to \infty$: all $\hat\beta_j \to 0$ (null model)
+- One set of estimates **for each** $\lambda$
+:::
+:::
+
+::: {.fragment .result}
+The intercept $\beta_0$ is **not** penalized (with centred predictors, $\hat\beta_0 = \bar y$).
+:::
+
+::: notes
+- Same RSS as least squares, plus one extra term.
+- The penalty is a "tax" on large coefficients. Lambda sets how heavy the tax is.
+- Least squares gives a single answer. Ridge gives a whole family, one for every lambda, so choosing lambda matters a lot. Sean covers how to choose it with cross-validation (6.2.3).
+- We shrink the slopes (the association of each variable with the response), not the intercept, which is only the average response when all predictors are zero.
+:::
+
+## A tax on big coefficients: a toy example {.smaller}
+
+One predictor, two candidate values of $\beta$, and $\lambda = 1$:
+
+| Candidate | RSS | Penalty $\lambda\beta^2$ | Ridge total |
+|:---:|:---:|:---:|:---:|
+| $\beta = 3$ | **10** | 9 | 19 |
+| $\beta = 2$ | 12 | 4 | **16** |
+
+::: {.fragment}
+- Least squares only looks at RSS → picks $\beta = 3$
+- Ridge looks at RSS + penalty → picks $\beta = 2$
+:::
+
+::: {.fragment .result}
+Ridge accepts a slightly worse training fit in exchange for a smaller coefficient. A bigger $\lambda$ makes that trade more attractive.
+:::
+
+[Toy numbers for illustration, not from the book.]{.caption}
+
+::: notes
+- Point at the RSS column only and ask: "Which beta does least squares pick?" (3, lower RSS.)
+- Then point at the penalty and total columns: "Which does ridge pick with lambda = 1?" (2, lower total.) Then reveal the bullets.
+- Follow-up question: "What if lambda were 0?" (Back to least squares, beta = 3.) "What if lambda were huge?" (The penalty dominates, beta goes toward 0.)
+:::
+
+## Figure 6.4: ridge coefficient paths {.smaller}
+
+::: {.center}
+![](figures/ridge-figure-6-4.png){width="72%"}
+:::
+
+[Standardized ridge coefficients for the ten predictors in the Credit data, plotted against $\lambda$ (left) and against $\|\hat\beta^R_\lambda\|_2/\|\hat\beta\|_2$ (right), where $\|\beta\|_2=\sqrt{\sum_j \beta_j^2}$. Source: ISLP, Fig. 6.4.]{.caption .center}
+
+::: {.fragment .result}
+**Left:** at $\lambda \approx 0$ we get least squares; as $\lambda$ grows, the coefficients shrink toward 0. **Right:** 1 = no shrinkage, 0 = everything shrunk to zero.
+:::
+
+::: notes
+- Each line is one of the ten predictors. Income, limit, rating and student are coloured because they have by far the largest coefficients.
+- Left panel: read from left to right. Far left is least squares; far right, every coefficient is essentially zero (the null model).
+- Point out that individual coefficients can go up for a while (rating, and income crosses zero) even though overall they shrink.
+- Right panel: same paths, but the x-axis is the size of the ridge coefficients relative to least squares, measured by the l2 norm (distance from zero). Read it as "how much is left": 1 means nothing has been shrunk.
+- Notice: nothing hits exactly zero until everything does. Keep that in mind for the lasso.
+:::
+
+## Standardize the predictors first {.smaller}
+
+::: {.columns}
+::: {.column width="50%"}
+**Least squares is *scale equivariant***
+
+- Measure income in \$1,000s instead of \$ → its coefficient becomes 1,000× larger
+- The prediction $X_j\hat\beta_j$ doesn't change
+:::
+::: {.column width="50%" .fragment}
+**Ridge is not**
+
+- The penalty $\lambda\sum\beta_j^2$ depends on the coefficient's *size*, so it depends on the predictor's units
+- Changing the scale of one predictor can change the fit, even the *other* coefficients
+:::
+:::
+
+::: {.fragment}
+**Fix:** give every predictor standard deviation 1 before fitting: $\;\tilde{x}_{ij}=\dfrac{x_{ij}}{\sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_{ij}-\bar{x}_j)^2}} \quad (6.6)$
+:::
+
+::: {.fragment .result}
+Figure 6.4 shows these *standardized* coefficients. In the workshop, `glmnet` standardizes for you by default.
+:::
+
+::: notes
+- Ask: "If income is in thousands of dollars, is its coefficient penalized more or less than if it's in dollars?" More: the coefficient is 1,000 times larger, so its square is a million times larger and it gets shrunk much harder.
+- That's arbitrary: the units we chose shouldn't decide how much a variable is shrunk. Standardizing removes that.
+- The denominator is just the predictor's standard deviation.
+- Link forward: glmnet in the workshop does this automatically.
+:::
+
+## Why ridge beats least squares: bias vs. variance {.smaller}
+
+::: {.center}
+![](figures/ridge-figure-6-5.png){width="70%"}
+:::
+
+[Squared bias (black), variance (green), test MSE (purple) for ridge on simulated data ($n = 50$, $p = 45$). Dashed line: minimum possible MSE. ×: lowest test MSE. Source: ISLP, Fig. 6.5.]{.caption .center}
+
+::: {.fragment}
+- $\lambda$ from 0 to about 10: variance drops fast, bias barely rises → test MSE falls
+- Lowest test MSE at about $\lambda \approx 30$; beyond that, bias takes over
+- Least squares ($\lambda = 0$) is almost as bad as the null model ($\lambda = \infty$)
+:::
+
+::: notes
+- Recall from Chapter 2: test MSE is roughly variance plus squared bias (plus irreducible error, the dashed line).
+- Before revealing the bullets ask: "As lambda grows, which way should bias and variance go?" Bias up, variance down, since the model becomes less flexible.
+- Left panel against lambda; right panel against the norm ratio, so it runs the other way: moving right, less shrinkage, more flexible, lower bias, higher variance.
+- Key point: the variance drop is big and cheap at first, so an intermediate lambda beats both extremes.
+:::
+
+## When does ridge help most? {.smaller}
+
+::: {.columns}
+::: {.column width="50%"}
+**Statistically**
+
+- When least squares has **high variance**: $p$ close to $n$
+- When $p > n$: least squares has no unique solution, ridge still works
+- Trades a small increase in bias for a large decrease in variance
+:::
+::: {.column width="50%" .fragment}
+**Computationally**
+
+- Ridge fits one model per $\lambda$
+- The whole path over all $\lambda$ costs about the same as **one** least squares fit
+:::
+:::
+
+::: {.fragment .result}
+**But:** ridge shrinks every coefficient and never sets one *exactly* to zero (unless $\lambda = \infty$), so all $p$ predictors stay in the model. **Next:** the lasso fixes that.
+:::
+
+::: notes
+- Summarize: ridge works best where least squares is unstable.
+- It's also cheap to compute: one quick fit per lambda, and the whole range of lambda costs about the same as a single least squares fit.
+- Hand-off: in the Credit data, only about four predictors seem to matter, but ridge keeps all ten. That's hard to interpret when p is large. The next speaker introduces the lasso, which can set coefficients exactly to zero.
+- And choosing lambda is coming up later, in 6.2.3.
+:::
 
 
 <!-- ===================== Speaker 2: add slides here ===================== -->

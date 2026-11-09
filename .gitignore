@@ -8,3 +8,4 @@ slides_files/
 *.pdf
 
 .DS_Store
+.Rproj.user
