@@ -1,8 +1,8 @@
 ---
 title: "Shrinkage Methods"
 subtitle: "ISLR / ISLP, Chapter 6.2"
-author: "Allwin Steve Paul Justin Anantharaj . Furkan Danisman . Sean Murphy . Vijval Rallan"
-date: today
+author: "Allwin Steve Paul Justin Anantharaj · Furkan Danisman · Sean Murphy · Vijval Rallan"
+date: 2026-11-11
 date-format: long
 format:
   revealjs:
@@ -33,10 +33,11 @@ format:
 2. The Lasso
 3. Comparing the Lasso and Ridge Regression
 4. Selecting the Tuning Parameter
+5. Hands-on workshop
 
 ::: notes
 - Today's topic is Chapter 6.2, shrinkage methods. We've split it into the four parts on the slide, using the book's section names.
-- Link back: in Chapter 3 we fit linear regression with least squares, and in Chapter 2 we saw the bias-variance trade-off. Shrinkage methods still fit a linear model with all p predictors, but they shrink the coefficients toward zero, which can reduce variance a lot.
+- Link back: in 6.1 (subset selection) we chose which predictors to keep and fit least squares on them, so each predictor was either fully in or fully out. Shrinkage keeps all p predictors and shrinks their coefficients toward zero instead, which can reduce variance a lot.
 - Order: I start with ridge regression, then the lasso, then comparing the two, then selecting the tuning parameter lambda with cross-validation. After that comes the hands-on workshop.
 - Optional question for the class: "Why would making coefficients smaller on purpose ever improve a model?" Take one or two answers, then move on. The next slides answer it.
 :::
@@ -222,7 +223,8 @@ Figure 6.4 shows these *standardized* coefficients. In the workshop, `glmnet` st
 ::: {.column width="50%" .fragment}
 **Computationally**
 
-- Ridge fits one model per $\lambda$
+- Best subset: $2^p$ models ($p = 45$: about $3.5 \times 10^{13}$)
+- Ridge: one model per $\lambda$
 - The whole path over all $\lambda$ costs about the same as **one** least squares fit
 :::
 :::
@@ -233,7 +235,7 @@ Figure 6.4 shows these *standardized* coefficients. In the workshop, `glmnet` st
 
 ::: notes
 - Summarize: ridge works best where least squares is unstable.
-- It's also cheap to compute: one quick fit per lambda, and the whole range of lambda costs about the same as a single least squares fit.
+- It's also cheap compared to best subset from 6.1.
 - Hand-off: in the Credit data, only about four predictors seem to matter, but ridge keeps all ten. That's hard to interpret when p is large. The next speaker introduces the lasso, which can set coefficients exactly to zero.
 - And choosing lambda is coming up later, in 6.2.3.
 :::
