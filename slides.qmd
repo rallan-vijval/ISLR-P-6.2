@@ -306,13 +306,13 @@ The intercept $\beta_0$ is not included in the penalty.
 The lasso balances training RSS against a penalty on the absolute values of the slope coefficients. Lambda controls the strength of the penalty.
 :::
 
-## Figure 6.6 — Lasso coefficient paths {.smaller}
+## Lasso coefficient paths {.smaller}
 
 ::: {.center}
 ![](figures/lasso-figure-6-6.png){width="88%"}
 :::
 
-[The standardized lasso coefficients for the Credit data set are shown against $\lambda$ and the ratio of the lasso coefficient norm to the least-squares coefficient norm.]{.caption .center}
+[Figure 6.6 : The standardized lasso coefficients for the Credit data set are shown against $\lambda$ and the ratio of the lasso coefficient norm to the least-squares coefficient norm.]{.caption .center}
 
 ::: {.fragment .result}
 At $\lambda=0$, the lasso gives the least-squares fit. When $\lambda$ is sufficiently large, all coefficient estimates become zero (the null model).
@@ -397,13 +397,15 @@ The $s$ in this formula counts predictors. It is not the same as the lasso's $s$
 The indicator is a counting device: it returns one for a nonzero coefficient and zero for a zero coefficient. Best subset selection searches combinations of predictors under the count constraint.
 :::
 
-## Figure 6.7 — Constraint regions and RSS contours {.smaller}
+## Constraint regions and RSS contours {.smaller}
 
 ::: {.center}
-![](figures/lasso-figure-6-7.png){width="80%"}
+![](figures/lasso-figure-6-7.png){width="60%"}
 :::
 
-[The blue regions are the constraints; the red ellipses are contours of RSS. The solution is the first point at which an RSS contour touches the constraint region.]{.caption .center}
+[]{.caption .center}
+
+[Figure 6.7 : The blue regions are the constraints; the red ellipses are contours of RSS. The solution is the first point at which an RSS contour touches the constraint region.]{.caption .center}
 
 ::: {.fragment .result}
 The lasso's diamond has sharp corners on the axes; the ridge circle has a smooth boundary.
