@@ -312,7 +312,7 @@ The lasso balances training RSS against a penalty on the absolute values of the 
 ![](figures/lasso-figure-6-6.png){width="88%"}
 :::
 
-[Figure 6.6 : The standardized lasso coefficients for the Credit data set are shown against $\lambda$ and the ratio of the lasso coefficient norm to the least-squares coefficient norm.]{.caption .center}
+[The standardized lasso coefficients for the Credit data set are shown against $\lambda$ and the ratio of the lasso coefficient norm to the least-squares coefficient norm. Source: ISLP, Fig. 6.6.]{.caption .center}
 
 ::: {.fragment .result}
 At $\lambda=0$, the lasso gives the least-squares fit. When $\lambda$ is sufficiently large, all coefficient estimates become zero (the null model).
@@ -405,7 +405,7 @@ The indicator is a counting device: it returns one for a nonzero coefficient and
 
 []{.caption .center}
 
-[Figure 6.7 : The blue regions are the constraints; the red ellipses are contours of RSS. The solution is the first point at which an RSS contour touches the constraint region.]{.caption .center}
+[The blue regions are the constraints; the red ellipses are contours of RSS. The solution is the first point at which an RSS contour touches the constraint region. Source: ISLP, Fig. 6.7.]{.caption .center}
 
 ::: {.fragment .result}
 The lasso's diamond has sharp corners on the axes; the ridge circle has a smooth boundary.
@@ -737,3 +737,8 @@ Ridge and lasso both depend on $\lambda$, so we need a way to choose it from the
 ::: {.fragment}
 **Up next, the workshop:** try everything from today on real data: ridge, lasso, and choosing $\lambda$.
 :::
+
+
+---
+
+## Thank you {.center .extra-large}
